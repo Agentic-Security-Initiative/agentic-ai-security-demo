@@ -9,4 +9,6 @@ export const SOURCES = {
   slides: { ...REPOSITORY, ref: "deck", path: "index.html" },
   // The document of the examples section, which the same release publishes beside the deck.
   examples: { ...REPOSITORY, ref: "deck", path: "examples.json" },
+  // The document of the controls section, which the same release publishes beside the deck.
+  controls: { ...REPOSITORY, ref: "deck", path: "controls.json" },
 };

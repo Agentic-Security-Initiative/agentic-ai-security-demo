@@ -20,7 +20,7 @@ domain of 3.6), one folder per section:
 | `/slides/` | The presentation, the slide deck of the private repository | Live |
 | `/examples/` | Worked examples, read from the private repository | Live |
 | `/usecases/` | To be defined | Placeholder |
-| `/controls/` | To be defined | Placeholder |
+| `/controls/` | A catalog, read from the private repository, with a filter per group | Live |
 
 A placeholder says only that the section is in preparation. Section 5.2 sets out how a section is
 built. The overview also explains how to create a token, and every sign-in page links to it.
@@ -48,20 +48,34 @@ in one section serves every other section of the site until the tab is closed.
 ### 2.2 The examples
 
 The private repository builds `examples.json`, a document that describes what the page shows: its
-texts, its fields, its groups (each in one of three tones, from green to red), and its items. The
-same release that publishes the deck writes it to the branch `deck`. `/examples/` signs in like
-`/slides/`, reads that file, and lays the items out as tiles in their groups. The page computes
-nothing and holds no text of its own: everything it shows comes from the file, so this public
-repository says nothing of the material.
+texts, its fields, its groups (each in one of three tones, from green to red), a chart, and its
+items, each with the blocks of a card. The same release that publishes the deck writes it to the
+branch `deck`. `/examples/` signs in like `/slides/`, reads that file, draws the chart, and lays the
+items out as tiles in their groups. Selecting a tile, or a point of the chart, opens the item's
+card in a dialog at the address `#<id>`, which can be linked to; the browser's back button, Escape,
+or the close button closes it. A card is a sequence of sections of blocks: charts, scales, facts,
+entries, tables, texts, notes, and placeholders. The page computes nothing and holds no text of its
+own: everything it shows comes from the file, so this public repository says nothing of the
+material.
 
-### 2.3 Files
+### 2.3 The controls
+
+The private repository builds `controls.json` as well, a document that describes a catalog: its
+texts, its filters, and its sections of groups of entries, each entry with the filters it belongs
+to. The same release writes it to the branch `deck`. `/controls/` signs in like the other sections
+and lays the catalog out; the filter in use is the address `#<filter>`, and an entry is reached at
+`#<id>`, so that the cards of `/examples/` can link to a filtered view.
+
+### 2.4 Files
 
 | File | Content |
 |---|---|
 | `index.html` | The overview |
 | `slides/index.html`, `slides/viewer.js` | The sign-in page of the presentation, and the code that writes the deck into it |
-| `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that lays the document out as tiles |
-| `usecases/`, `controls/` | The placeholders, an `index.html` each |
+| `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that lays the document out as tiles and opens the card of each item |
+| `assets/chart.js` | A chart drawn as SVG from a document: axes, regions in the three tones, boundary lines, and points with tooltips and links |
+| `controls/index.html`, `controls/controls.js` | The sign-in page of the controls, and the code that lays the catalog out with its filters |
+| `usecases/` | The placeholder, an `index.html` |
 | `assets/site.css` | The style of every page, in the palette of the deck |
 | `assets/signin.js` | The sign-in of a section: its form, the shared token, and the messages of a failed read |
 | `assets/token.js` | The token shared by the sections |
