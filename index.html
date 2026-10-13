@@ -2,71 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- Network requests may go only to the GitHub API; no plugins, no <base>, no form posts.
-       Scripts and styles are left open because the deck that replaces this page inlines its own. -->
+  <!-- This page loads nothing but its own stylesheet. -->
   <meta http-equiv="Content-Security-Policy"
-        content="connect-src https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+        content="default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex, nofollow">
-  <title>Private presentation</title>
-  <link rel="stylesheet" href="viewer.css">
-  <script type="module" src="viewer.js"></script>
+  <title>Agentic AI security</title>
+  <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
   <main class="card">
-    <p class="kicker">Private presentation</p>
-    <h1>Sign in with GitHub to view it</h1>
+    <p class="kicker">Private material</p>
+    <h1>Agentic AI security</h1>
     <p class="lead">
-      This page shows a presentation kept in a private GitHub repository. GitHub decides who sees
-      it: paste a personal access token of a GitHub account that can read that repository.
+      This site shows material kept in a private GitHub repository, and only to GitHub users who
+      can read that repository. Its sections read the material through the GitHub API with your
+      own token: without access, they show nothing of it.
     </p>
 
-    <form id="signin" autocomplete="off">
-      <fieldset>
-        <label for="token">GitHub personal access token</label>
-        <div class="row">
-          <input id="token" name="token" type="password" spellcheck="false" autocapitalize="off"
-                 placeholder="github_pat_&hellip;" required>
-          <button type="submit">Open</button>
-        </div>
-      </fieldset>
-    </form>
-    <p id="status" role="status" aria-live="polite"></p>
-    <noscript><p class="noscript">This page needs JavaScript to read the presentation from GitHub.</p></noscript>
-
-    <p class="actions">
-      <a class="button" href="https://github.com/settings/personal-access-tokens/new"
-         target="_blank" rel="noopener noreferrer">Sign in to GitHub and create a token</a>
-    </p>
-
-    <details>
-      <summary>How to create the token</summary>
-      <ol>
-        <li>Sign in to GitHub with the account that was given access, then open
-          <em>Settings</em>, <em>Developer settings</em>, <em>Personal access tokens</em>,
-          <em>Fine-grained tokens</em>, and choose <em>Generate new token</em>.</li>
-        <li>As <em>Resource owner</em>, choose the owner of the repository; under
-          <em>Repository access</em>, choose <em>Only select repositories</em> and pick that
-          repository.</li>
-        <li>Under <em>Permissions</em>, set <em>Contents</em> to <em>Read-only</em>. No other
-          permission is needed.</li>
-        <li>Choose a short expiration, generate the token, and paste it above.</li>
-      </ol>
-      <p>
-        If you were invited as a collaborator to a repository owned by a personal account, GitHub
-        does not offer that repository to fine-grained tokens. Create a
-        <a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=Private%20presentation"
-           target="_blank" rel="noopener noreferrer">classic token</a> with the <code>repo</code> scope
-        instead, with the shortest expiration, and delete it when you are done: a classic token can
-        read and write every repository your account can.
-      </p>
-    </details>
+    <!-- One entry per section; a section in preparation carries the class "pending". -->
+    <nav aria-label="Sections">
+      <ul class="sections">
+        <li><a href="slides/"><span class="name">Slides</span><span class="state">The presentation</span></a></li>
+        <li class="pending"><a href="examples/"><span class="name">Examples</span><span class="state">In preparation</span></a></li>
+        <li class="pending"><a href="usecases/"><span class="name">Use cases</span><span class="state">In preparation</span></a></li>
+        <li class="pending"><a href="controls/"><span class="name">Controls</span><span class="state">In preparation</span></a></li>
+      </ul>
+    </nav>
 
     <p class="fine">
-      The token stays in this browser tab and is sent only to api.github.com. Closing the tab
-      forgets it, and so does <a href="?signout">signing out</a>. Revoking the token, or your
-      access to the repository, takes effect at once.
+      A token entered in one section serves the others until the tab is closed. It stays in this
+      browser tab and is sent only to api.github.com;
+      <a href="slides/?signout">signing out</a> forgets it at once.
     </p>
   </main>
 </body>

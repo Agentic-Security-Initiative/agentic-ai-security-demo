@@ -1,4 +1,5 @@
-/* The front page only: once a token opens the presentation, the deck replaces the page
+/* The style of every page of the site: the overview, the sign-in page of each section,
+   and the placeholders. Once a token opens the presentation, the deck replaces its page
    with its own styles. The palette is the deck's. */
 
 :root {
@@ -56,6 +57,15 @@ body {
   border-radius: 8px;
 }
 
+.up {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+}
+
+.up a::before {
+  content: "\2190\00a0";
+}
+
 .kicker {
   margin: 0 0 0.5rem;
   color: var(--slate);
@@ -74,6 +84,10 @@ h1 {
 
 .lead {
   margin: 0 0 1.5rem;
+}
+
+.lead:last-child {
+  margin-bottom: 0;
 }
 
 fieldset {
@@ -146,6 +160,46 @@ summary:focus-visible {
 #status[data-kind="error"],
 .noscript {
   color: var(--error);
+}
+
+.sections {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.sections a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--navy);
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.sections a:hover {
+  background: var(--tint);
+}
+
+.sections .name {
+  color: var(--navy);
+  font-weight: bold;
+}
+
+.sections .state {
+  color: var(--slate);
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.sections .pending a {
+  border-left-color: var(--rule);
 }
 
 .actions {

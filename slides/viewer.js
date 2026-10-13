@@ -1,38 +1,11 @@
-import { SOURCE } from "./config.js";
-import { ReadError, readFile } from "./github.js";
-
-// The token is kept in sessionStorage: it survives a reload of this tab and is copied
-// into the speaker view that reveal.js opens from it, and it is gone when the tab closes.
-const TOKEN_KEY = "presentation-viewer-token";
+import { SOURCES } from "../assets/config.js";
+import { ReadError, readFile } from "../assets/github.js";
+import { forgetToken, storedToken, storeToken } from "../assets/token.js";
 
 const form = document.getElementById("signin");
 const fields = form.querySelector("fieldset");
 const input = document.getElementById("token");
 const status = document.getElementById("status");
-
-function storedToken() {
-  try {
-    return sessionStorage.getItem(TOKEN_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function storeToken(token) {
-  try {
-    sessionStorage.setItem(TOKEN_KEY, token);
-  } catch {
-    // Without storage the token lasts only as long as the presentation stays open.
-  }
-}
-
-function forgetToken() {
-  try {
-    sessionStorage.removeItem(TOKEN_KEY);
-  } catch {
-    // Nothing was stored.
-  }
-}
 
 function report(message, kind) {
   status.textContent = message;
@@ -51,7 +24,7 @@ async function open(token) {
   fields.disabled = true;
   report("Opening the presentation…", "busy");
   try {
-    const html = await readFile(SOURCE, token);
+    const html = await readFile(SOURCES.slides, token);
     storeToken(token);
     show(html);
   } catch (error) {
