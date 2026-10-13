@@ -7,4 +7,6 @@ export const SOURCES = {
   // The single-file reveal.js deck that CI in the private repository force-pushes to
   // the 'deck' branch at every release.
   slides: { ...REPOSITORY, ref: "deck", path: "index.html" },
+  // The document of the examples section, which the same release publishes beside the deck.
+  examples: { ...REPOSITORY, ref: "deck", path: "examples.json" },
 };

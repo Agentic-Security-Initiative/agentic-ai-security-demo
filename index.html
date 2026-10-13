@@ -25,11 +25,37 @@
     <nav aria-label="Sections">
       <ul class="sections">
         <li><a href="slides/"><span class="name">Slides</span><span class="state">The presentation</span></a></li>
-        <li class="pending"><a href="examples/"><span class="name">Examples</span><span class="state">In preparation</span></a></li>
+        <li><a href="examples/"><span class="name">Examples</span><span class="state">Worked examples</span></a></li>
         <li class="pending"><a href="usecases/"><span class="name">Use cases</span><span class="state">In preparation</span></a></li>
         <li class="pending"><a href="controls/"><span class="name">Controls</span><span class="state">In preparation</span></a></li>
       </ul>
     </nav>
+
+    <section id="token" class="help-section" aria-labelledby="token-title">
+      <h2 id="token-title">How to create the token</h2>
+      <ol>
+        <li>Sign in to GitHub with the account that was given access, then open
+          <em>Settings</em>, <em>Developer settings</em>, <em>Personal access tokens</em>,
+          <em>Fine-grained tokens</em>, and choose
+          <a href="https://github.com/settings/personal-access-tokens/new" target="_blank"
+             rel="noopener noreferrer"><em>Generate new token</em></a>.</li>
+        <li>As <em>Resource owner</em>, choose the owner of the repository; under
+          <em>Repository access</em>, choose <em>Only select repositories</em> and pick that
+          repository.</li>
+        <li>Under <em>Permissions</em>, set <em>Contents</em> to <em>Read-only</em>. No other
+          permission is needed.</li>
+        <li>Choose a short expiration, generate the token, and paste it into the sign-in page of a
+          section.</li>
+      </ol>
+      <p>
+        If you were invited as a collaborator to a repository owned by a personal account, GitHub
+        does not offer that repository to fine-grained tokens. Create a
+        <a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=Private%20presentation"
+           target="_blank" rel="noopener noreferrer">classic token</a> with the <code>repo</code> scope
+        instead, with the shortest expiration, and delete it when you are done: a classic token can
+        read and write every repository your account can.
+      </p>
+    </section>
 
     <p class="fine">
       A token entered in one section serves the others until the tab is closed. It stays in this

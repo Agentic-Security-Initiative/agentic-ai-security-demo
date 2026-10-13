@@ -64,7 +64,7 @@ function explain(response) {
       );
     case 404:
       return new ReadError(
-        "This token cannot see the presentation: your GitHub account has no read access to it, " +
+        "This token cannot see this material: your GitHub account has no read access to it, " +
           "or the token does not include its repository.",
         { forgetToken: true },
       );

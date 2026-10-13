@@ -18,12 +18,12 @@ domain of 3.6), one folder per section:
 |---|---|---|
 | `/` | The overview: a generic page that links to the sections | Live |
 | `/slides/` | The presentation, the slide deck of the private repository | Live |
-| `/examples/` | To be defined | Placeholder |
+| `/examples/` | Worked examples, read from the private repository | Live |
 | `/usecases/` | To be defined | Placeholder |
 | `/controls/` | To be defined | Placeholder |
 
 A placeholder says only that the section is in preparation. Section 5.2 sets out how a section is
-built.
+built. The overview also explains how to create a token, and every sign-in page links to it.
 
 ## 2. How it works
 
@@ -45,14 +45,25 @@ built.
 The token is kept in the tab's `sessionStorage`, which belongs to the site's origin: a token entered
 in one section serves every other section of the site until the tab is closed.
 
-### 2.2 Files
+### 2.2 The examples
+
+The private repository builds `examples.json`, a document that describes what the page shows: its
+texts, its fields, its groups (each in one of three tones, from green to red), and its items. The
+same release that publishes the deck writes it to the branch `deck`. `/examples/` signs in like
+`/slides/`, reads that file, and lays the items out as tiles in their groups. The page computes
+nothing and holds no text of its own: everything it shows comes from the file, so this public
+repository says nothing of the material.
+
+### 2.3 Files
 
 | File | Content |
 |---|---|
 | `index.html` | The overview |
-| `slides/index.html`, `slides/viewer.js` | The sign-in page of the presentation, and the code that reads the deck and shows it |
-| `examples/`, `usecases/`, `controls/` | The placeholders, an `index.html` each |
+| `slides/index.html`, `slides/viewer.js` | The sign-in page of the presentation, and the code that writes the deck into it |
+| `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that lays the document out as tiles |
+| `usecases/`, `controls/` | The placeholders, an `index.html` each |
 | `assets/site.css` | The style of every page, in the palette of the deck |
+| `assets/signin.js` | The sign-in of a section: its form, the shared token, and the messages of a failed read |
 | `assets/token.js` | The token shared by the sections |
 | `assets/github.js` | The one API call, and a message for each failure |
 | `assets/config.js` | What the site reads from the private repository; the only file that names it |
@@ -162,8 +173,9 @@ builds the deck, and *Release* publishes it to the branch `deck`. To check:
 gh api repos/andreagalle/agentic-ai-security/branches/deck --jq .commit.commit.message
 ```
 
-The answer reads `Deck v<version>.<build>`. Until the branch exists, the slides answer that the
-token cannot see the presentation.
+The answer reads `Deck v<version>.<build>`; the branch holds `index.html`, the deck, and
+`examples.json`, the examples. Until a file is there, its section answers that the token cannot see
+this material.
 
 ### 3.8 Grant and revoke access
 
@@ -218,10 +230,11 @@ A section is a folder holding an `index.html`, served at `/<folder>/`.
 
 1. Links are relative (`../assets/site.css`, `../`), never absolute: the site is served under
    `/agentic-ai-security-demo/` and, with a custom domain, at the root of another host.
-2. Pages share `assets/`: `site.css` for the style, `token.js` for the token, `github.js` for the
-   API, and `config.js` for what is read from the private repository. A section that reads private
-   material adds its source to `SOURCES` in `config.js`, and follows `slides/`: a generic sign-in
-   page, the token from `token.js`, the file from `readFile`.
+2. Pages share `assets/`: `site.css` for the style, `signin.js` for the sign-in, `token.js` for
+   the token, `github.js` for the API, and `config.js` for what is read from the private
+   repository. A section that reads private material adds its source to `SOURCES` in `config.js`,
+   copies the sign-in page of `examples/` (the `#gate` and its form), and calls `signIn` with a
+   function that shows the file once GitHub returns it.
 3. Nothing of the private material is committed here: a section holds only the code that fetches
    and shows it. Material that is meant to be public needs no token and can live in the section.
 4. Each page carries a Content Security Policy in a `<meta>` tag: `default-src 'self'` on a page
@@ -246,9 +259,9 @@ A section is a folder holding an `index.html`, served at `/<folder>/`.
 
 | Symptom | Cause | Remedy |
 |---|---|---|
-| "This token cannot see the presentation" | The branch `deck` is not published yet, the account cannot read the repository, or the token does not include it | 3.7; 3.8; Section 4 |
+| "This token cannot see this material" | The file is not on the branch `deck` yet, the account cannot read the repository, or the token does not include it | 3.7; 3.8; Section 4 |
 | "GitHub did not accept this token" | The token is mistyped, expired, or revoked | Create a new token |
 | "This token may not read repository contents" | A fine-grained token without the *Contents* permission | Section 4, step 3 |
 | `git push` refused with 403 in the Codespace | The Codespace's token covers only its own repository | 3.2 |
 | The site answers 404 | Pages is not enabled yet, or still deploying | 3.5; the *Actions* tab of this repository |
-| The slides show an old version | The private repository's *Release* workflow has not run, or failed | Its *Actions* tab |
+| The slides or the examples show an old version | The private repository's *Release* workflow has not run, or failed | Its *Actions* tab |
