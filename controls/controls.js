@@ -1,10 +1,12 @@
 import { SOURCES } from "../assets/config.js";
 import { signIn } from "../assets/signin.js";
 
-// Lays out a catalog document: filters, then sections of groups of entries, then a legend. Each
-// entry carries tags, and a filter shows the entries that carry its id; the filter in use is the
-// address after a #, so that a link can open the catalog filtered, and an entry's own id, after
-// a #, brings it into view. The document gives every text; this code knows only that structure.
+// Lays out a catalog document: a summary, groups of filters and a search, then sections of groups
+// of entries, then a key. Each entry carries tags; each group of filters keeps one choice, and an
+// entry shows when it carries the tag of every choice and matches the search. The choices are the
+// address after a #, joined by +, so that a link can open the catalog filtered; an entry's own id
+// after a # brings it into view. The document gives every text; this code knows only that
+// structure.
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -13,23 +15,64 @@ function element(tag, className, text) {
   return node;
 }
 
+function summaryNode(summary) {
+  const box = element("section", "catalog-summary");
+  const grid = element("div", "summary-grid");
+  for (const item of summary.items) {
+    const card = element("article", "summary-item");
+    card.append(element("span", "entry-code", item.code), element("h3", "", item.title), element("p", "", item.text));
+    grid.append(card);
+  }
+  box.append(element("h2", "", summary.title), grid);
+  return box;
+}
+
+function metaNode(item) {
+  const pair = element("div");
+  const value = element("dd");
+  if (item.links) {
+    for (const id of item.links) {
+      const link = element("a", "", id);
+      link.href = `#${encodeURIComponent(id)}`;
+      value.append(link, " ");
+    }
+  } else {
+    value.textContent = item.value;
+  }
+  pair.append(element("dt", "", item.label), value);
+  return pair;
+}
+
+// A text is written into its details only when they first open, so that a catalog of a thousand
+// entries stays light.
+function textNode(item) {
+  const more = element("details");
+  more.append(element("summary", "", item.label));
+  const fill = () => {
+    if (!more.dataset.filled) more.append(element("div", "entry-text", item.text));
+    more.dataset.filled = "true";
+  };
+  more.addEventListener("toggle", fill);
+  if (item.open) {
+    fill();
+    more.open = true;
+  }
+  return more;
+}
+
 function entryNode(entry) {
-  const card = element("article", "entry");
+  const card = element("article", entry.sub ? "entry sub" : "entry");
   card.id = entry.id;
-  card.dataset.tags = entry.tags.join(" ");
   const head = element("header", "entry-head");
   head.append(element("span", "entry-code", entry.code), element("h4", "entry-title", entry.title));
   const chips = element("div", "entry-chips");
-  for (const chip of entry.chips) chips.append(element("span", `entry-chip tone-${chip.tone}`, chip.label));
-  const meta = element("dl", "entry-meta");
-  for (const item of entry.meta) {
-    const pair = element("div");
-    pair.append(element("dt", "", item.label), element("dd", "", item.value));
-    meta.append(pair);
+  for (const chip of entry.chips) {
+    const look = chip.tone ? `tone-${chip.tone}` : `kind-${chip.kind || "plain"}`;
+    chips.append(element("span", `entry-chip ${look}`, chip.label));
   }
-  const more = element("details");
-  more.append(element("summary", "", entry.textLabel), element("p", "", entry.text));
-  card.append(head, chips, meta, more);
+  const meta = element("dl", "entry-meta");
+  for (const item of entry.meta) meta.append(metaNode(item));
+  card.append(head, chips, meta, ...entry.texts.map(textNode));
   return card;
 }
 
@@ -39,12 +82,11 @@ function show(text) {
     document.querySelector(`[data-fill="${key}"]`).textContent = view[key];
   }
   const catalog = document.getElementById("catalog");
-  const entries = [];
-  const groups = [];
+  if (view.summary) catalog.append(summaryNode(view.summary));
 
+  const records = [];
+  const groups = [];
   const bar = element("div", "filters");
-  bar.setAttribute("role", "toolbar");
-  const buttons = new Map();
   catalog.append(bar);
 
   for (const section of view.sections) {
@@ -54,17 +96,26 @@ function show(text) {
       const part = element("section", "catalog-group");
       part.id = group.id;
       const grid = element("div", "entries-grid");
+      const heading = element("h3", "", group.title);
+      const members = [];
       for (const entry of group.entries) {
         const node = entryNode(entry);
-        entries.push(node);
+        const words = [entry.code, entry.title, ...entry.texts.map((t) => t.text)].join(" ").toLowerCase();
+        const record = { node, tags: new Set(entry.tags), words };
+        records.push(record);
+        members.push(record);
         grid.append(node);
       }
-      part.append(element("h3", "", group.title), grid);
-      groups.push(part);
+      part.append(heading, grid);
+      groups.push({ part, members });
       box.append(part);
     }
     catalog.append(box);
   }
+
+  const empty = element("p", "catalog-empty", view.empty || "");
+  empty.hidden = true;
+  catalog.append(empty);
 
   if (view.legend) {
     const legend = element("section", "catalog-legend");
@@ -74,34 +125,93 @@ function show(text) {
     catalog.append(legend);
   }
 
-  function apply(id, fromHash) {
-    for (const node of entries) {
-      node.hidden = id !== "all" && !node.dataset.tags.split(" ").includes(id);
+  // One choice per group of filters, "all" by default; the search narrows every choice.
+  const choice = new Map(view.filters.map((group) => [group.id, "all"]));
+  const owner = new Map();
+  const buttons = [];
+  let query = "";
+
+  function passes(record, skip) {
+    for (const [group, option] of choice) {
+      if (group !== skip && option !== "all" && !record.tags.has(option)) return false;
     }
-    for (const part of groups) part.hidden = [...part.querySelectorAll(".entry")].every((node) => node.hidden);
-    for (const [key, button] of buttons) button.setAttribute("aria-pressed", String(key === id));
-    if (!fromHash) history.replaceState(null, "", id === "all" ? location.pathname + location.search : `#${id}`);
+    return !query || record.words.includes(query);
   }
 
-  for (const filter of view.filters) {
-    const count = filter.id === "all"
-      ? entries.length
-      : entries.filter((node) => node.dataset.tags.split(" ").includes(filter.id)).length;
-    const button = element("button", filter.tone ? `filter tone-${filter.tone}` : "filter");
-    button.type = "button";
-    button.append(element("span", "", filter.label), element("span", "count", String(count)));
-    button.addEventListener("click", () => apply(filter.id, false));
-    buttons.set(filter.id, button);
-    bar.append(button);
+  function apply(writeHash) {
+    let shown = 0;
+    for (const record of records) {
+      record.node.hidden = !passes(record);
+      if (!record.node.hidden) shown += 1;
+    }
+    for (const { part, members } of groups) part.hidden = members.every((r) => r.node.hidden);
+    empty.hidden = shown > 0;
+    for (const { group, option, button, count } of buttons) {
+      button.setAttribute("aria-pressed", String(choice.get(group) === option));
+      count.textContent = String(records.filter((r) => (option === "all" || r.tags.has(option)) && passes(r, group)).length);
+    }
+    if (writeHash) {
+      const chosen = [...choice.values()].filter((option) => option !== "all");
+      const address = chosen.length ? `#${chosen.join("+")}` : location.pathname + location.search;
+      history.replaceState(null, "", address);
+    }
+  }
+
+  for (const group of view.filters) {
+    const row = element("div", "filter-group");
+    row.setAttribute("role", "group");
+    row.setAttribute("aria-label", group.label);
+    row.append(element("span", "filter-label", group.label));
+    for (const option of group.options) {
+      if (option.id !== "all") owner.set(option.id, group.id);
+      const button = element("button", option.tone ? `filter tone-${option.tone}` : "filter");
+      button.type = "button";
+      const count = element("span", "count");
+      button.append(element("span", "", option.label), count);
+      button.addEventListener("click", () => {
+        choice.set(group.id, option.id);
+        apply(true);
+      });
+      buttons.push({ group: group.id, option: option.id, button, count });
+      row.append(button);
+    }
+    bar.append(row);
+  }
+
+  let search;
+  if (view.search) {
+    const row = element("div", "filter-group");
+    const label = element("label", "filter-label", view.search.label);
+    search = element("input", "filter-search");
+    search.type = "search";
+    search.id = "catalog-search";
+    search.placeholder = view.search.placeholder;
+    search.autocomplete = "off";
+    label.htmlFor = search.id;
+    search.addEventListener("input", () => {
+      query = search.value.trim().toLowerCase();
+      apply(false);
+    });
+    row.append(label, search);
+    bar.append(row);
   }
 
   function route() {
-    const id = decodeURIComponent(location.hash.slice(1));
-    if (buttons.has(id)) return apply(id, true);
-    apply("all", true);
-    const target = id && document.getElementById(id);
+    const hash = decodeURIComponent(location.hash.slice(1));
+    const parts = hash ? hash.split("+") : [];
+    for (const group of choice.keys()) choice.set(group, "all");
+    for (const node of catalog.querySelectorAll(".spotlight")) node.classList.remove("spotlight");
+    if (parts.length && parts.every((part) => owner.has(part))) {
+      for (const part of parts) choice.set(owner.get(part), part);
+      return apply(false);
+    }
+    query = "";
+    if (search) search.value = "";
+    apply(false);
+    const target = hash && document.getElementById(hash);
     if (target && target.classList.contains("entry")) {
-      target.querySelector("details").open = true;
+      const first = target.querySelector("details");
+      if (first) first.open = true;
       target.scrollIntoView({ block: "center" });
       target.classList.add("spotlight");
     }

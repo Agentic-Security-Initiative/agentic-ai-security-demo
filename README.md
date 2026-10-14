@@ -20,7 +20,7 @@ domain of 3.6), one folder per section:
 | `/slides/` | The presentation, the slide deck of the private repository | Live |
 | `/examples/` | Worked examples, read from the private repository | Live |
 | `/usecases/` | Use cases, read from the private repository, one card per case | Live |
-| `/controls/` | A catalog, read from the private repository, with a filter per group | Live |
+| `/controls/` | A catalog, read from the private repository, with groups of filters and a search | Live |
 
 A section in preparation shows only a placeholder that says so. Section 5.2 sets out how a section is
 built. The overview also explains how to create a token, and every sign-in page links to it.
@@ -66,10 +66,14 @@ sections, in `assets/cards.js`.
 ### 2.3 The controls
 
 The private repository builds `controls.json` as well, a document that describes a catalog: its
-texts, its filters, and its sections of groups of entries, each entry with the filters it belongs
-to. The same release writes it to the branch `deck`. `/controls/` signs in like the other sections
-and lays the catalog out; the filter in use is the address `#<filter>`, and an entry is reached at
-`#<id>`, so that the cards of `/examples/` and `/usecases/` can link to a filtered view.
+texts, a summary shown first, groups of filters, a search, and its sections of groups of entries,
+each entry with the tags it carries, its chips, its details, and its texts. The same release writes
+it to the branch `deck`. `/controls/` signs in like the other sections and lays the catalog out.
+Each group of filters keeps one choice, and an entry shows when it carries the tag of every choice
+and matches the search; each button counts the entries its choice would show. The choices are the
+address, joined by `+` (`#<filter>` or `#<filter>+<filter>`), and an entry is reached at `#<id>`, so
+that the cards of `/examples/` and `/usecases/` can link to a filtered view. With a thousand
+entries, a text is written into the page only when its details first open.
 
 ### 2.4 The overview
 

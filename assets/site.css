@@ -53,6 +53,11 @@
   box-sizing: border-box;
 }
 
+/* The hidden attribute wins over any display a rule sets, so that code can hide any element. */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -1039,23 +1044,133 @@ abbr {
   font: 0.78rem var(--mono);
 }
 
+.id-item a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.id-item a:hover {
+  text-decoration: underline;
+}
+
+/* Groups of codes by kind: the plain kind on a gray rule, the others on an accent rule, so that
+   the two sources of a selection read apart. */
+.id-group[class*="kind-"] {
+  padding-left: 0.6rem;
+  border-left: 3px solid var(--accent);
+}
+
+.id-group.kind-conventional {
+  border-left-color: var(--rule);
+}
+
+.id-group[class*="kind-"]:not(.kind-conventional) .id-group-title {
+  color: var(--accent);
+}
+
+.id-group.kind-tailored .id-item {
+  border-color: var(--accent);
+}
+
+.id-group.kind-added .id-item {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--paper);
+}
+
+.id-group.kind-proposed .id-item {
+  border: 1px dashed var(--accent);
+  background: var(--paper);
+  color: var(--accent);
+}
+
+.id-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.25rem;
+  margin: 0.4rem 0 0;
+}
+
 .id-link {
   display: inline-block;
   margin-top: 0.4rem;
   font-weight: bold;
 }
 
-/* A catalog: filters that stay in view, groups of entries, a legend. */
+/* A catalog: a summary, groups of filters and a search that stay in view, groups of entries, a
+   key. */
+.catalog-summary > h2 {
+  margin: 1.75rem 0 0.6rem;
+  color: var(--navy);
+  font-size: 1.15rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0.75rem;
+}
+
+.summary-item {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--navy);
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.summary-item h3 {
+  margin: 0.4rem 0 0.25rem;
+  color: var(--navy);
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.summary-item p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
 .filters {
   position: sticky;
   z-index: 1;
   top: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.45rem;
   margin: 1.5rem 0 0.5rem;
   padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
   background: var(--page);
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.filter-label {
+  min-width: 5rem;
+  color: var(--slate);
+  font-size: 0.78rem;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.filter-search {
+  flex: 1 1 14rem;
+  max-width: 26rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font: 0.9rem var(--font);
+}
+
+.catalog-empty {
+  margin: 1.5rem 0;
+  color: var(--slate);
 }
 
 .filter {
@@ -1125,6 +1240,10 @@ abbr {
   scroll-margin: 5rem;
 }
 
+.entry.sub {
+  border-left: 4px solid var(--tint);
+}
+
 .entry.spotlight {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -1191,6 +1310,23 @@ abbr {
   margin: 0;
 }
 
+.entry-meta dd a {
+  font: 0.78rem var(--mono);
+}
+
+.entry-chip.kind-plain {
+  --fill: var(--tint);
+  --edge: var(--rule);
+  color: var(--navy);
+}
+
+.entry-chip.kind-proposed {
+  --fill: var(--paper);
+  --edge: var(--accent);
+  border-style: dashed;
+  color: var(--accent);
+}
+
 .entry summary {
   color: var(--accent);
   font-size: 0.85rem;
@@ -1203,9 +1339,10 @@ abbr {
   outline-offset: 2px;
 }
 
-.entry details p {
+.entry-text {
   margin: 0.4rem 0 0;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
+  white-space: pre-line;
 }
 
 .catalog-legend dl {

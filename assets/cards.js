@@ -181,23 +181,33 @@ function text(block) {
 }
 
 // Codes in groups, each with its title as a tooltip, and a link to where they are told in full.
+// Groups of codes, each group of a kind that sets its look, each code with its title on hover and,
+// when the document gives one, a link; then the links of the block.
 function list(block) {
   const box = element("div", "id-list");
   for (const group of block.groups) {
-    const row = element("div", "id-group");
+    const row = element("div", group.kind ? `id-group kind-${group.kind}` : "id-group");
     const items = element("ul", "id-items");
     for (const item of group.items) {
-      const entry = element("li", "id-item", item.code);
+      const entry = element("li", "id-item");
+      const label = item.href ? element("a", "", item.code) : document.createTextNode(item.code);
+      if (item.href) label.href = item.href;
       entry.title = item.title;
+      entry.append(label);
       items.append(entry);
     }
     row.append(rich(element("p", "id-group-title"), group.title), items);
     box.append(row);
   }
-  if (block.href) {
-    const link = element("a", "id-link", block.link);
-    link.href = block.href;
-    box.append(link);
+  const links = block.links || (block.href ? [{ href: block.href, label: block.link }] : []);
+  if (links.length) {
+    const row = element("p", "id-links");
+    for (const item of links) {
+      const link = element("a", "id-link", item.label);
+      link.href = item.href;
+      row.append(link);
+    }
+    box.append(row);
   }
   return box;
 }
