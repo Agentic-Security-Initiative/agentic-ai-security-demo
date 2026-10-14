@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- This page loads nothing but its own stylesheet. -->
+  <!-- This page loads only its own files, and reads the latest release from the GitHub API. -->
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+        content="default-src 'self'; connect-src https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex, nofollow">
   <title>Agentic AI security</title>
   <link rel="stylesheet" href="assets/site.css">
+  <script type="module" src="assets/overview.js"></script>
 </head>
 <body>
   <main class="card">
@@ -30,6 +31,17 @@
         <li><a href="controls/"><span class="name">Controls</span><span class="state">The control selection</span></a></li>
       </ul>
     </nav>
+
+    <!-- Shown in place of the help on the token once a section has stored one. -->
+    <section id="release" class="help-section" aria-labelledby="release-title" hidden>
+      <h2 id="release-title">Latest release</h2>
+      <p>The PDF of the latest release: <code id="release-file"></code><span id="release-date"></span>.</p>
+      <p><a id="release-link" class="button primary" href="#" rel="noopener noreferrer">Download (PDF)</a></p>
+      <p class="fine">
+        The download opens on github.com, which serves it to the GitHub account signed in in this
+        browser.
+      </p>
+    </section>
 
     <section id="token" class="help-section" aria-labelledby="token-title">
       <h2 id="token-title">How to create the token</h2>

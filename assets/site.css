@@ -154,6 +154,11 @@ button,
   color: var(--navy);
 }
 
+.button.primary {
+  background: var(--navy);
+  color: var(--paper);
+}
+
 button:disabled {
   opacity: 0.6;
   cursor: progress;

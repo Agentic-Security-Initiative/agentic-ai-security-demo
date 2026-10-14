@@ -1,5 +1,6 @@
-// Reads one file of a repository through the GitHub REST API, as raw text, with the
-// reader's token. GitHub checks the token on every request; this code grants nothing.
+// Reads from a repository through the GitHub REST API with the reader's token: one file, as
+// raw text, or the latest release. GitHub checks the token on every request; this code grants
+// nothing.
 
 const API = "https://api.github.com";
 
@@ -15,16 +16,32 @@ export class ReadError extends Error {
 
 export async function readFile({ owner, repo, ref, path }, token) {
   const file = path.split("/").map(encodeURIComponent).join("/");
-  const url =
-    `${API}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}` +
-    `/contents/${file}?ref=${encodeURIComponent(ref)}`;
+  // The raw media type returns the file itself, up to 100 MB, not base64 JSON.
+  const response = await request(
+    `${route(owner, repo)}/contents/${file}?ref=${encodeURIComponent(ref)}`,
+    "application/vnd.github.raw+json",
+    token,
+  );
+  return response.text();
+}
 
+// The latest release of a repository, neither a draft nor a prerelease: its tag, its date, and
+// its assets, each with the address at which github.com serves it to a signed-in account.
+export async function latestRelease({ owner, repo }, token) {
+  const response = await request(`${route(owner, repo)}/releases/latest`, "application/vnd.github+json", token);
+  return response.json();
+}
+
+function route(owner, repo) {
+  return `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
+}
+
+async function request(path, accept, token) {
   let response;
   try {
-    response = await fetch(url, {
+    response = await fetch(`${API}${path}`, {
       headers: {
-        // The raw media type returns the file itself, up to 100 MB, not base64 JSON.
-        Accept: "application/vnd.github.raw+json",
+        Accept: accept,
         Authorization: `Bearer ${token}`,
         "X-GitHub-Api-Version": "2022-11-28",
       },
@@ -37,7 +54,7 @@ export async function readFile({ owner, repo, ref, path }, token) {
       forgetToken: false,
     });
   }
-  if (response.ok) return response.text();
+  if (response.ok) return response;
   throw explain(response);
 }
 

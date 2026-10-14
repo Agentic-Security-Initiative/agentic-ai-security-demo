@@ -16,7 +16,7 @@ domain of 3.6), one folder per section:
 
 | Path | Content | State |
 |---|---|---|
-| `/` | The overview: a generic page that links to the sections | Live |
+| `/` | The overview: a generic page that links to the sections and, once signed in, offers the PDF of the latest release | Live |
 | `/slides/` | The presentation, the slide deck of the private repository | Live |
 | `/examples/` | Worked examples, read from the private repository | Live |
 | `/usecases/` | Use cases, read from the private repository, one card per case | Live |
@@ -71,11 +71,21 @@ to. The same release writes it to the branch `deck`. `/controls/` signs in like 
 and lays the catalog out; the filter in use is the address `#<filter>`, and an entry is reached at
 `#<id>`, so that the cards of `/examples/` and `/usecases/` can link to a filtered view.
 
-### 2.4 Files
+### 2.4 The overview
+
+Before a reader signs in, the overview explains how to create a token. Once a section has stored
+one, the overview asks the API for the latest release of the private repository (neither a draft
+nor a prerelease) and shows, in place of that help, a button that downloads its PDF. The button is
+a link to the asset's address on github.com, which serves the file, under the asset's name with
+its version, to the account signed in to github.com in the same browser: the host of release
+assets sends no CORS header, so a page cannot download the file through the API with the token.
+Without a token, or when GitHub answers with an error, the help stays.
+
+### 2.5 Files
 
 | File | Content |
 |---|---|
-| `index.html` | The overview |
+| `index.html`, `assets/overview.js` | The overview, and the code that offers the latest release once signed in |
 | `slides/index.html`, `slides/viewer.js` | The sign-in page of the presentation, and the code that writes the deck into it |
 | `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that draws the chart of all the items and lays the document out with `assets/cards.js` |
 | `usecases/index.html`, `usecases/usecases.js` | The sign-in page of the use cases, and the code that lays the document out with `assets/cards.js` |
@@ -85,7 +95,7 @@ and lays the catalog out; the filter in use is the address `#<filter>`, and an e
 | `assets/site.css` | The style of every page, in the palette of the deck |
 | `assets/signin.js` | The sign-in of a section: its form, the shared token, and the messages of a failed read |
 | `assets/token.js` | The token shared by the sections |
-| `assets/github.js` | The one API call, and a message for each failure |
+| `assets/github.js` | The API calls (a file, the latest release), and a message for each failure |
 | `assets/config.js` | What the site reads from the private repository; the only file that names it |
 | `.nojekyll` | Tells Pages to serve the files as they are |
 
@@ -267,7 +277,8 @@ A section is a folder holding an `index.html`, served at `/<folder>/`.
 
 1. The token is sent only to `api.github.com`: the Content Security Policy of each page blocks
    requests to any other host. It is kept in the tab's `sessionStorage`, so closing the tab forgets
-   it, and `slides/?signout` clears it at once, for every section.
+   it, and `slides/?signout` clears it at once, for every section. The download of the overview is
+   a link to github.com, which the browser follows with its own session there, not with the token.
 2. Nothing secret is public. This repository reveals the names of the private repository and of its
    branch, which GitHub hides behind a 404 from anyone without access.
 3. There is no offline copy to attack: the material is fetched on each visit, so revoking a token or

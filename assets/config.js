@@ -13,4 +13,7 @@ export const SOURCES = {
   controls: { ...REPOSITORY, ref: "deck", path: "controls.json" },
   // The document of the use cases section, which the same release publishes beside the deck.
   usecases: { ...REPOSITORY, ref: "deck", path: "usecases.json" },
+  // The repository whose latest release the overview offers for download, once a section has
+  // stored the reader's token.
+  release: { ...REPOSITORY },
 };
