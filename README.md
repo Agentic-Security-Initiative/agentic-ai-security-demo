@@ -19,10 +19,10 @@ domain of 3.6), one folder per section:
 | `/` | The overview: a generic page that links to the sections | Live |
 | `/slides/` | The presentation, the slide deck of the private repository | Live |
 | `/examples/` | Worked examples, read from the private repository | Live |
-| `/usecases/` | To be defined | Placeholder |
+| `/usecases/` | Use cases, read from the private repository, one card per case | Live |
 | `/controls/` | A catalog, read from the private repository, with a filter per group | Live |
 
-A placeholder says only that the section is in preparation. Section 5.2 sets out how a section is
+A section in preparation shows only a placeholder that says so. Section 5.2 sets out how a section is
 built. The overview also explains how to create a token, and every sign-in page links to it.
 
 ## 2. How it works
@@ -58,13 +58,18 @@ entries, tables, texts, notes, and placeholders. The page computes nothing and h
 own: everything it shows comes from the file, so this public repository says nothing of the
 material.
 
+`/usecases/` works the same way, from `usecases.json`: tiles in groups, each opening a card at
+`#<id>`. Its cards add one kind of block, a flow: a row of numbered steps joined by arrows, some
+marked as loops. The code of the tiles, the groups, the cards, and their blocks is shared by both
+sections, in `assets/cards.js`.
+
 ### 2.3 The controls
 
 The private repository builds `controls.json` as well, a document that describes a catalog: its
 texts, its filters, and its sections of groups of entries, each entry with the filters it belongs
 to. The same release writes it to the branch `deck`. `/controls/` signs in like the other sections
 and lays the catalog out; the filter in use is the address `#<filter>`, and an entry is reached at
-`#<id>`, so that the cards of `/examples/` can link to a filtered view.
+`#<id>`, so that the cards of `/examples/` and `/usecases/` can link to a filtered view.
 
 ### 2.4 Files
 
@@ -72,10 +77,11 @@ and lays the catalog out; the filter in use is the address `#<filter>`, and an e
 |---|---|
 | `index.html` | The overview |
 | `slides/index.html`, `slides/viewer.js` | The sign-in page of the presentation, and the code that writes the deck into it |
-| `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that lays the document out as tiles and opens the card of each item |
+| `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that draws the chart of all the items and lays the document out with `assets/cards.js` |
+| `usecases/index.html`, `usecases/usecases.js` | The sign-in page of the use cases, and the code that lays the document out with `assets/cards.js` |
+| `assets/cards.js` | The tiles in their groups, and the card of each item in a dialog routed by the address, laid out by kinds of block; shared by `/examples/` and `/usecases/` |
 | `assets/chart.js` | A chart drawn as SVG from a document: axes, regions in the three tones, boundary lines, and points with tooltips and links |
 | `controls/index.html`, `controls/controls.js` | The sign-in page of the controls, and the code that lays the catalog out with its filters |
-| `usecases/` | The placeholder, an `index.html` |
 | `assets/site.css` | The style of every page, in the palette of the deck |
 | `assets/signin.js` | The sign-in of a section: its form, the shared token, and the messages of a failed read |
 | `assets/token.js` | The token shared by the sections |
@@ -188,8 +194,8 @@ gh api repos/andreagalle/agentic-ai-security/branches/deck --jq .commit.commit.m
 ```
 
 The answer reads `Deck v<version>.<build>`; the branch holds `index.html`, the deck, and
-`examples.json`, the examples. Until a file is there, its section answers that the token cannot see
-this material.
+`examples.json`, `controls.json`, and `usecases.json`, the material of the other sections. Until a
+file is there, its section answers that the token cannot see this material.
 
 ### 3.8 Grant and revoke access
 

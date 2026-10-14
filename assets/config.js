@@ -11,4 +11,6 @@ export const SOURCES = {
   examples: { ...REPOSITORY, ref: "deck", path: "examples.json" },
   // The document of the controls section, which the same release publishes beside the deck.
   controls: { ...REPOSITORY, ref: "deck", path: "controls.json" },
+  // The document of the use cases section, which the same release publishes beside the deck.
+  usecases: { ...REPOSITORY, ref: "deck", path: "usecases.json" },
 };

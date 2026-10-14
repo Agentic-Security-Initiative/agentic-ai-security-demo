@@ -2,22 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- This page loads nothing but its own stylesheet. -->
+  <!-- Requests go only to the GitHub API; the page loads nothing but its own files. -->
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+        content="default-src 'self'; connect-src https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex, nofollow">
   <title>Use cases</title>
   <link rel="stylesheet" href="../assets/site.css">
+  <script type="module" src="usecases.js"></script>
 </head>
 <body>
-  <!-- Placeholder: the section is not built yet (README.md, Section 1). -->
-  <main class="card">
+  <main class="card" id="gate">
+    <p class="up"><a href="../">Overview</a></p>
+    <p class="kicker">Private use cases</p>
+    <h1>Sign in with GitHub to view them</h1>
+    <p class="lead">
+      This page shows use cases kept in a private GitHub repository. GitHub decides who sees them:
+      paste a personal access token of a GitHub account that can read that repository.
+    </p>
+
+    <form id="signin" autocomplete="off">
+      <fieldset>
+        <label for="token">GitHub personal access token</label>
+        <div class="row">
+          <input id="token" name="token" type="password" spellcheck="false" autocapitalize="off"
+                 placeholder="github_pat_&hellip;" required>
+          <button type="submit">Open</button>
+        </div>
+      </fieldset>
+    </form>
+    <p id="status" role="status" aria-live="polite"></p>
+    <noscript><p class="noscript">This page needs JavaScript to read the use cases from GitHub.</p></noscript>
+
+    <p class="actions">
+      <a class="button" href="https://github.com/settings/personal-access-tokens/new"
+         target="_blank" rel="noopener noreferrer">Sign in to GitHub and create a token</a>
+    </p>
+
+    <p class="help"><a href="../#token">How to create the token</a></p>
+
+    <p class="fine">
+      The token stays in this browser tab and is sent only to api.github.com. Closing the tab
+      forgets it, and so does <a href="?signout">signing out</a>. Revoking the token, or your
+      access to the repository, takes effect at once.
+    </p>
+  </main>
+
+  <!-- Filled by examples.js from the document GitHub returns: every text comes from it. -->
+  <main class="wide" id="content" hidden>
     <p class="up"><a href="../">Overview</a></p>
     <p class="kicker">Use cases</p>
-    <h1>In preparation</h1>
-    <p class="lead">This section is not published yet.</p>
+    <h1 data-fill="title"></h1>
+    <p class="lead" data-fill="lead"></p>
+    <p class="note" data-fill="note"></p>
+    <div id="groups"></div>
   </main>
+
+  <!-- The card of an item, opened at its address (#id); filled by examples.js. -->
+  <dialog id="card" class="card-dialog" aria-label="Details">
+    <div class="card-bar"><button type="button" class="card-close">Close</button></div>
+    <div class="card-slot"></div>
+  </dialog>
 </body>
 </html>

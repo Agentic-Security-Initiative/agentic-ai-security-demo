@@ -1220,6 +1220,43 @@ abbr {
   margin: 0;
 }
 
+/* A sequence of steps, chips joined by arrows; a step that loops back is dashed. */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.flow-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 0.85rem;
+}
+
+.flow-step.loop {
+  border: 1.5px dashed var(--accent);
+  color: var(--accent);
+}
+
+.flow-step.loop .chip {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.flow-arrow {
+  color: var(--slate);
+  font-weight: bold;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tile,
   .tile:hover {
