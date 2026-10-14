@@ -17,7 +17,7 @@ async function offer(token) {
 
   const link = document.getElementById("release-link");
   link.href = pdf.browser_download_url;
-  link.textContent = `Download ${release.tag_name} (PDF)`;
+  link.textContent = `${link.textContent} (${release.tag_name})`;
   document.getElementById("release-file").textContent = pdf.name;
   const published = new Date(release.published_at);
   document.getElementById("release-date").textContent = Number.isNaN(published.getTime())
