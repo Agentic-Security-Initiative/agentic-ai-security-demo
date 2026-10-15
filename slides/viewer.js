@@ -29,7 +29,7 @@ function decorate() {
   const logo = document.createElement("img");
   logo.src = "../assets/logo.png";
   logo.alt = "";
-  logo.width = 42;
+  logo.width = 45;
   logo.height = 40;
   logo.style.display = "block";
   home.append(logo);
