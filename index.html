@@ -65,7 +65,7 @@
           <em>Fine-grained tokens</em>, and choose
           <a href="https://github.com/settings/personal-access-tokens/new" target="_blank"
              rel="noopener noreferrer"><em>Generate new token</em></a>.</li>
-        <li>As <em>Resource owner</em>, choose the owner of the repository; under
+        <li>As <em>Resource owner</em>, choose the organization that owns the repository; under
           <em>Repository access</em>, choose <em>Only select repositories</em> and pick that
           repository.</li>
         <li>Under <em>Permissions</em>, set <em>Contents</em> to <em>Read-only</em>. No other
@@ -74,8 +74,9 @@
           section.</li>
       </ol>
       <p>
-        If you were invited as a collaborator to a repository owned by a personal account, GitHub
-        does not offer that repository to fine-grained tokens. Create a
+        If you were added to the repository as an outside collaborator, not as a member of the
+        organization that owns it, GitHub does not offer that organization as resource owner, and a
+        new fine-grained token may wait for an owner's approval. In the first case, create a
         <a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=Private%20presentation"
            target="_blank" rel="noopener noreferrer">classic token</a> with the <code>repo</code> scope
         instead, with the shortest expiration, and delete it when you are done: a classic token can
