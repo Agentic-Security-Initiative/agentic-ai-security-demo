@@ -107,7 +107,7 @@ stays.
 | `assets/chart.js` | A chart drawn as SVG from a document: axes, regions in the three tones, boundary lines, and points with tooltips and links |
 | `controls/index.html`, `controls/controls.js` | The sign-in page of the controls, and the code that lays the catalog out with its filters |
 | `assets/site.css` | The style of every page, in the palette of the deck: a system typeface, thin rules, soft shadows, short transitions |
-| `assets/logo.png`, `assets/favicon.png` | The logo, in the bar, on the overview, and in the button of the presentation; and the icon of every page. Both are made in the private repository and copied here |
+| `assets/logo.png`, `assets/favicon.png` | The logo, in the bar and in the button of the presentation; and the icon of every page. Both are made in the private repository and copied here |
 | `assets/signin.js` | The sign-in of a section: its form, the shared token, and the messages of a failed read |
 | `assets/token.js` | The token shared by the sections |
 | `assets/github.js` | The API calls (a file, the latest release), and a message for each failure |

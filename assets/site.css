@@ -115,14 +115,6 @@ body {
   height: 40px;
 }
 
-/* The logo above the title of the overview. */
-.hero-logo {
-  display: block;
-  width: auto;
-  height: 120px;
-  margin: 0 0 1.25rem;
-}
-
 .site-home:hover span {
   color: var(--accent);
 }
