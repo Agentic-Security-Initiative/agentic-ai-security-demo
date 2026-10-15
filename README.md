@@ -23,7 +23,9 @@ domain of 3.6), one folder per section:
 | `/controls/` | A catalog, read from the private repository, with groups of filters and a search | Live |
 | `/download/` | The download of the latest release, with what GitHub asks before it serves the file | Live |
 
-A section in preparation shows only a placeholder that says so. Section 5.2 sets out how a section is
+Every page opens with the same bar: the logo and the name, top left, lead back to the overview
+from anywhere, and the sections follow, the current one marked; inside the presentation, a small
+button with the logo does the same. A section in preparation shows only a placeholder that says so. Section 5.2 sets out how a section is
 built. The overview also explains how to create a token, and every sign-in page links to it.
 
 ## 2. How it works
@@ -98,13 +100,14 @@ stays.
 | `index.html`, `assets/overview.js` | The overview, and the code that shows the latest release once signed in |
 | `download/index.html`, `download/download.js` | The download page: what github.com asks, then the link to the file |
 | `assets/release.js` | The PDF of the latest release, read through the API with the token |
-| `slides/index.html`, `slides/viewer.js` | The sign-in page of the presentation, and the code that writes the deck into it |
+| `slides/index.html`, `slides/viewer.js` | The sign-in page of the presentation, and the code that writes the deck into it and adds to it the icon and a button with the logo, top left, back to the overview |
 | `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that draws the chart of all the items and lays the document out with `assets/cards.js` |
 | `usecases/index.html`, `usecases/usecases.js` | The sign-in page of the use cases, and the code that lays the document out with `assets/cards.js` |
 | `assets/cards.js` | The tiles in their groups, and the card of each item in a dialog routed by the address, laid out by kinds of block; shared by `/examples/` and `/usecases/` |
 | `assets/chart.js` | A chart drawn as SVG from a document: axes, regions in the three tones, boundary lines, and points with tooltips and links |
 | `controls/index.html`, `controls/controls.js` | The sign-in page of the controls, and the code that lays the catalog out with its filters |
-| `assets/site.css` | The style of every page, in the palette of the deck |
+| `assets/site.css` | The style of every page, in the palette of the deck: a system typeface, thin rules, soft shadows, short transitions |
+| `assets/logo.png`, `assets/favicon.png` | The logo, in the bar, on the overview, and in the button of the presentation; and the icon of every page. Both are made in the private repository and copied here |
 | `assets/signin.js` | The sign-in of a section: its form, the shared token, and the messages of a failed read |
 | `assets/token.js` | The token shared by the sections |
 | `assets/github.js` | The API calls (a file, the latest release), and a message for each failure |

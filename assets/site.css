@@ -1,6 +1,7 @@
 /* The style of every page of the site: the overview, the sign-in page of each section,
    and the placeholders. Once a token opens the presentation, the deck replaces its page
-   with its own styles. The palette is the deck's. */
+   with its own styles. The palette is the deck's; the look is sober and technical: a system
+   typeface, thin rules, soft shadows, and short transitions, nothing that moves on its own. */
 
 :root {
   --navy: #1f3864;
@@ -23,8 +24,13 @@
   --track: #d9e5f0;
   --shadow: rgba(31, 56, 100, 0.08);
   --shadow-soft: rgba(31, 56, 100, 0.07);
-  --font: Arial, Helvetica, "Liberation Sans", sans-serif;
-  --mono: Consolas, "DejaVu Sans Mono", monospace;
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  /* The bar at the top of every page, and the shared radius, shadow, and focus ring. */
+  --bar: 64px;
+  --radius: 12px;
+  --lift: 0 1px 2px var(--shadow), 0 8px 24px var(--shadow-soft);
+  --ring: color-mix(in srgb, var(--accent) 30%, transparent);
   color-scheme: light;
 }
 
@@ -59,49 +65,139 @@
 }
 
 body {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px 16px;
-  background: var(--page);
+  margin: 0;
+  padding: 0 0 3rem;
+  background: linear-gradient(180deg, var(--tint), var(--page) 24rem) no-repeat, var(--page);
   color: var(--text);
-  font: 16px/1.5 var(--font);
+  font: 16px/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The bar at the top of every page: the logo and the name lead back to the overview from
+   anywhere, and the sections follow, the current one marked. It stays in view, translucent. */
+.site-bar {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  height: var(--bar);
+  margin-bottom: 2rem;
+  padding: 0 max(16px, calc((100% - 74rem) / 2));
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--page) 84%, transparent);
+  -webkit-backdrop-filter: saturate(1.5) blur(10px);
+  backdrop-filter: saturate(1.5) blur(10px);
+}
+
+.site-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 8px;
+  color: var(--navy);
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.site-home img {
+  display: block;
+  width: auto;
+  height: 40px;
+}
+
+/* The logo above the title of the overview. */
+.hero-logo {
+  display: block;
+  width: auto;
+  height: 120px;
+  margin: 0 0 1.25rem;
+}
+
+.site-home:hover span {
+  color: var(--accent);
+}
+
+.site-nav {
+  display: flex;
+  gap: 0.15rem;
+  margin-left: auto;
+}
+
+.site-nav a {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  color: var(--slate);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.site-nav a:hover {
+  background: var(--tint);
+  color: var(--navy);
+}
+
+.site-nav a[aria-current="page"] {
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  color: var(--navy);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .site-nav {
+    display: none;
+  }
 }
 
 .card {
-  width: 100%;
-  max-width: 36rem;
-  padding: 2rem;
-  background: var(--paper);
+  position: relative;
+  width: min(100% - 32px, 36rem);
+  margin-block: auto;
+  padding: 2.25rem;
+  overflow: hidden;
   border: 1px solid var(--rule);
-  border-top: 4px solid var(--navy);
-  border-radius: 8px;
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: var(--lift);
 }
 
-.up {
-  margin: 0 0 1rem;
-  font-size: 0.85rem;
-}
-
-.up a::before {
-  content: "\2190\00a0";
+/* A thin band of the two blues across the top of a card. */
+.card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--navy), var(--accent));
+  content: "";
 }
 
 .kicker {
   margin: 0 0 0.5rem;
-  color: var(--slate);
-  font-size: 0.8rem;
-  font-weight: bold;
-  letter-spacing: 0.08em;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 h1 {
   margin: 0 0 0.75rem;
   color: var(--navy);
-  font-size: 1.5rem;
-  line-height: 1.25;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .lead {
@@ -133,12 +229,19 @@ label {
 input {
   flex: 1;
   min-width: 0;
-  padding: 0.6rem 0.75rem;
+  padding: 0.6rem 0.8rem;
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--paper);
   color: var(--text);
   font: 0.95rem var(--mono);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring);
+  outline: none;
 }
 
 button,
@@ -146,17 +249,28 @@ button,
   display: inline-block;
   padding: 0.6rem 1.2rem;
   border: 1px solid var(--navy);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--navy);
   color: var(--paper);
-  font: bold 0.95rem var(--font);
+  font: 600 0.95rem var(--font);
   text-decoration: none;
   cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover,
+.button.primary:hover {
+  border-color: var(--accent);
+  background: var(--accent);
 }
 
 .button {
   background: transparent;
   color: var(--navy);
+}
+
+.button:hover {
+  background: var(--tint);
 }
 
 .button.primary {
@@ -198,19 +312,31 @@ a:focus-visible {
 
 .sections a {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1.1rem;
   border: 1px solid var(--rule);
-  border-left: 4px solid var(--navy);
-  border-radius: 6px;
+  border-radius: var(--radius);
+  background: var(--paper);
   color: var(--text);
   text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sections a::after {
+  color: var(--slate);
+  content: "\2192";
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
 .sections a:hover {
-  background: var(--tint);
+  border-color: var(--accent);
+  box-shadow: var(--lift);
+}
+
+.sections a:hover::after {
+  color: var(--accent);
+  transform: translateX(3px);
 }
 
 .sections .name {
@@ -219,13 +345,14 @@ a:focus-visible {
 }
 
 .sections .state {
+  margin-left: auto;
   color: var(--slate);
   font-size: 0.85rem;
   text-align: right;
 }
 
 .sections .pending a {
-  border-left-color: var(--rule);
+  opacity: 0.6;
 }
 
 .actions {
@@ -262,10 +389,11 @@ ol > li + li {
 }
 
 code {
-  padding: 0 0.25em;
-  border-radius: 4px;
+  padding: 0.05em 0.35em;
+  border-radius: 6px;
   background: var(--tint);
   font-family: var(--mono);
+  font-size: 0.88em;
 }
 
 .fine {
@@ -277,14 +405,13 @@ code {
 /* A wide page of tiles in groups, each group in one of the three tones. */
 
 .wide {
-  width: 100%;
-  max-width: 74rem;
-  padding: 0.5rem 0 2rem;
+  width: min(100% - 32px, 74rem);
+  padding: 0 0 2rem;
 }
 
 .wide h1 {
-  font-size: 2rem;
-  letter-spacing: -0.01em;
+  font-size: 2.1rem;
+  letter-spacing: -0.025em;
 }
 
 .wide > .lead,
@@ -361,7 +488,7 @@ code {
 
 .group {
   margin-top: 2.25rem;
-  scroll-margin-top: 1rem;
+  scroll-margin-top: calc(var(--bar) + 1rem);
 }
 
 .group-head {
@@ -1134,7 +1261,7 @@ abbr {
 .filters {
   position: sticky;
   z-index: 1;
-  top: 0;
+  top: var(--bar);
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -1262,7 +1389,7 @@ abbr {
   border: 1px solid var(--rule);
   border-radius: 10px;
   background: var(--paper);
-  scroll-margin: 5rem;
+  scroll-margin: calc(var(--bar) + 9rem);
 }
 
 .entry.sub {
@@ -1425,9 +1552,14 @@ abbr {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tile,
-  .tile:hover {
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+
+  .tile:hover,
+  .sections a:hover::after {
     transform: none;
   }
 }
