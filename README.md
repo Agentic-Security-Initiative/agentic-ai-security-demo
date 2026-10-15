@@ -6,12 +6,12 @@ CSS, and JavaScript: the material is never committed here. The browser reads it 
 repository through the GitHub API, with each reader's own token, so GitHub, not this site, decides
 who sees it.
 
-The material comes from the private repository `andreagalle/agentic-ai-security`, in which this
-repository is the submodule `demo/`.
+The material comes from the private repository `Agentic-Security-Initiative/agentic-ai-security`, in which this
+repository is the submodule `demo/`. Both belong to the organization `Agentic-Security-Initiative`.
 
 ## 1. Sections
 
-The site is served at `https://andreagalle.github.io/agentic-ai-security-demo/` (or at the custom
+The site is served at `https://agentic-security-initiative.github.io/agentic-ai-security-demo/` (or at the custom
 domain of 3.6), one folder per section:
 
 | Path | Content | State |
@@ -39,7 +39,7 @@ built. The overview also explains how to create a token, and every sign-in page 
 2. A visitor opens `/slides/`. The page shows only a generic invitation to sign in with GitHub, so a
    visitor without access learns nothing of the presentation.
 3. A reader pastes a personal access token, and the page requests
-   `GET https://api.github.com/repos/andreagalle/agentic-ai-security/contents/index.html?ref=deck`
+   `GET https://api.github.com/repos/Agentic-Security-Initiative/agentic-ai-security/contents/index.html?ref=deck`
    with the raw media type. GitHub returns the file only if the token's account can read the
    repository, and 404 otherwise.
 4. The page writes the deck into itself, so reveal.js runs as if served directly: slide links
@@ -122,24 +122,27 @@ root of a Codespace (or a clone) of the private repository, where this repositor
 
 ### 3.1 Create the public repository
 
-On [github.com/new](https://github.com/new): owner `andreagalle`, name `agentic-ai-security-demo`,
-visibility *Public*, and nothing to initialize it with (no README, `.gitignore`, or license), so that
-the first push meets an empty repository. From a machine where `gh` is signed in as the owner, the
-same is `gh repo create andreagalle/agentic-ai-security-demo --public`.
+On [github.com/new](https://github.com/new): owner the organization `Agentic-Security-Initiative`, name
+`agentic-ai-security-demo`, visibility *Public*, and nothing to initialize it with (no README,
+`.gitignore`, or license), so that the first push meets an empty repository. From a machine where
+`gh` is signed in as a member who may create repositories there, the same is
+`gh repo create Agentic-Security-Initiative/agentic-ai-security-demo --public`.
 
 ### 3.2 Let the Codespace push to it
 
 A Codespace can push only to the repository it was created from, unless its `devcontainer.json`
-grants more. The private repository's `.devcontainer/devcontainer.json` grants *Contents* write on
-this repository, under `customizations.codespaces.repositories`: GitHub asks to authorize it when a
-Codespace is created, and it applies only to Codespaces created after that file reaches the branch
-they start from. Such a Codespace pushes with plain `git push`.
+grants more, and it can grant only repositories of the same owner. The private repository's
+`.devcontainer/devcontainer.json` grants *Contents* write on this repository, under
+`customizations.codespaces.repositories`: GitHub asks to authorize it when a Codespace is created,
+and it applies only to Codespaces created after that file reaches the branch they start from. Such a
+Codespace pushes with plain `git push`.
 
 A Codespace created before then needs a token for the push:
 
 1. Create a [fine-grained token](https://github.com/settings/personal-access-tokens/new): resource
-   owner `andreagalle`; repository access *Only select repositories*, `agentic-ai-security-demo`;
-   permission *Contents*, read and write; a short expiration.
+   owner `Agentic-Security-Initiative`; repository access *Only select repositories*, `agentic-ai-security-demo`;
+   permission *Contents*, read and write; a short expiration. If the organization requires approval
+   of fine-grained tokens, an owner approves it first.
 2. Read it into the shell, without echoing it or writing it to the history:
 
    ```bash
@@ -158,13 +161,13 @@ repository added there would let a push publish the private history.
 cd demo
 git add .
 git commit -m "Add the presentation viewer"
-git remote add origin https://github.com/andreagalle/agentic-ai-security-demo.git
+git remote add origin https://github.com/Agentic-Security-Initiative/agentic-ai-security-demo.git
 
 # A Codespace with the permission of 3.2:
 git push -u origin master
 
 # A Codespace created before it:
-git push "https://andreagalle:${DEMO_TOKEN}@github.com/andreagalle/agentic-ai-security-demo.git" master
+git push "https://x-access-token:${DEMO_TOKEN}@github.com/Agentic-Security-Initiative/agentic-ai-security-demo.git" master
 git fetch origin && git branch --set-upstream-to=origin/master
 
 cd ..
@@ -176,7 +179,7 @@ cd ..
 the private one points to. Git does this only once `demo/` has a commit (3.3):
 
 ```bash
-git submodule add https://github.com/andreagalle/agentic-ai-security-demo.git demo
+git submodule add https://github.com/Agentic-Security-Initiative/agentic-ai-security-demo.git demo
 git commit -m "Add the presentation viewer as the submodule demo"
 ```
 
@@ -187,24 +190,24 @@ Git answers "Adding existing repo at 'demo' to the index" and stages `.gitmodule
 
 In this repository: *Settings*, *Pages*, *Build and deployment*, source *Deploy from a branch*,
 branch `master`, folder `/ (root)`, *Save*. Within a minute or two the site is live at
-`https://andreagalle.github.io/agentic-ai-security-demo/`. The same from a shell:
+`https://agentic-security-initiative.github.io/agentic-ai-security-demo/`. The same from a shell:
 
 ```bash
-gh api -X POST repos/andreagalle/agentic-ai-security-demo/pages \
+gh api -X POST repos/Agentic-Security-Initiative/agentic-ai-security-demo/pages \
   -f "source[branch]=master" -f "source[path]=/"
 ```
 
 ### 3.6 Give the site a custom domain
 
-All project sites of an account without a custom domain share one origin,
-`https://andreagalle.github.io`, and a page of another such site, opened in the same tab, can read
+All project sites of an organization without a custom domain share one origin,
+`https://agentic-security-initiative.github.io`, and a page of another such site, opened in the same tab, can read
 this site's `sessionStorage`, the token included. A host of its own gives the site its own origin.
 Every link in the site is relative, so the sections work unchanged at the root of the new host.
 
-1. Verify the domain first, so that no other account can claim its subdomains: account *Settings*,
-   *Pages*, *Add a domain*, `andrew.style`, and add the TXT record GitHub shows.
-2. Add a DNS record `CNAME` from the chosen host, for instance `cap.andrew.style`, to
-   `andreagalle.github.io.`
+1. Verify the domain first, so that no other account can claim its subdomains: the organization's
+   *Settings*, *Pages*, *Add a domain*, the domain, and add the TXT record GitHub shows.
+2. Add a DNS record `CNAME` from the chosen host, for instance `site.example.org`, to
+   `agentic-security-initiative.github.io.`
 3. In this repository: *Settings*, *Pages*, *Custom domain*, the host, *Save*. GitHub commits a
    `CNAME` file to `master`; bring it into `demo/` with `git -C demo pull`.
 4. Once the certificate is issued, tick *Enforce HTTPS*.
@@ -215,7 +218,7 @@ Merge the private repository's changes into `master` and push. The workflow *Bui
 builds the deck, and *Release* publishes it to the branch `deck`. To check:
 
 ```bash
-gh api repos/andreagalle/agentic-ai-security/branches/deck --jq .commit.commit.message
+gh api repos/Agentic-Security-Initiative/agentic-ai-security/branches/deck --jq .commit.commit.message
 ```
 
 The answer reads `Deck v<version>.<build>`; the branch holds `index.html`, the deck, and
@@ -224,18 +227,24 @@ file is there, its section answers that the token cannot see this material.
 
 ### 3.8 Grant and revoke access
 
-A reader is anyone who can read the private repository: invite them in its *Settings*,
-*Collaborators*, *Add people*. On a repository owned by a personal account every collaborator can
-also push, since only organizations offer a read-only role (3.9). Removing a collaborator, or
-revoking a token, takes effect on the next request.
+A reader is anyone who can read the private repository. Make them members of the organization
+and give them the *Read* role on that repository, best through a team, in the repository's
+*Settings*, *Collaborators and teams*; or add them there as outside collaborators with the *Read*
+role. Members can use fine-grained tokens, outside collaborators only classic ones (Section 4).
+The organization's *Settings*, *Personal access tokens*, decide which tokens may reach its
+repositories: fine-grained tokens must be allowed (and approved, if the organization requires
+approval), and classic tokens must not be restricted while outside collaborators use them. Removing
+a reader, or revoking a token, takes effect on the next request.
 
-### 3.9 Moving to an organization (optional)
+### 3.9 Moving to another owner
 
-On a personal account, collaborators get write access and cannot use fine-grained tokens (Section
-4). Transferring the private repository to an organization, with the readers as members holding
-the *Read* role, removes both limits. After a transfer, update the owner in `assets/config.js`, the
-URL in the private repository's `.gitmodules`, and the repository named in its
-`devcontainer.json`.
+Both repositories were moved from a personal account to the organization `Agentic-Security-Initiative`. A later transfer
+needs the same steps: update the owner in `assets/config.js`, the URLs in the private repository's
+`.gitmodules` (then `git submodule sync`), and the repositories named in its `devcontainer.json`;
+check *Settings*, *Pages* here, since the site moves to the new owner's `github.io` host and the old
+address is not redirected; and tell the readers, whose fine-grained tokens name the old owner and
+stop working. GitHub redirects Git and the API from the old names, but the site should not rely on
+it.
 
 ## 4. For readers: the token
 
@@ -243,13 +252,14 @@ A fine-grained token with the least access is enough:
 
 1. Sign in to GitHub, then *Settings*, *Developer settings*, *Personal access tokens*,
    *Fine-grained tokens*, *Generate new token*.
-2. *Resource owner*: the owner of the repository. *Repository access*: *Only select repositories*,
-   that repository.
+2. *Resource owner*: the organization that owns the repository. *Repository access*: *Only select
+   repositories*, that repository.
 3. *Permissions*: *Contents*, read-only. Nothing else.
 4. A short expiration. Then paste the token into the sign-in page of a section.
 
 Fine-grained tokens reach only repositories owned by the token's own account or by an organization
-the account belongs to. A collaborator on a repository owned by a personal account therefore needs a
+the account belongs to, and the organization may require an owner to approve them. An outside
+collaborator, who is not a member of the organization, therefore needs a
 [classic token](https://github.com/settings/tokens/new?scopes=repo&description=Private%20presentation)
 with the `repo` scope. That token can read and write every repository the account can, so it should
 get the shortest expiration and be deleted after use.
@@ -271,7 +281,7 @@ In a Codespace created before 3.2, whose own token cannot push here, push with t
 
 ```bash
 cd demo
-git push "https://andreagalle:${DEMO_TOKEN}@github.com/andreagalle/agentic-ai-security-demo.git" master
+git push "https://x-access-token:${DEMO_TOKEN}@github.com/Agentic-Security-Initiative/agentic-ai-security-demo.git" master
 git fetch origin
 cd ..
 ```
@@ -319,5 +329,6 @@ A section is a folder holding an `index.html`, served at `/<folder>/`.
 | "GitHub did not accept this token" | The token is mistyped, expired, or revoked | Create a new token |
 | "This token may not read repository contents" | A fine-grained token without the *Contents* permission | Section 4, step 3 |
 | `git push` refused with 403 in the Codespace | The Codespace's token covers only its own repository | 3.2 |
+| A new fine-grained token sees nothing | The organization requires approval of fine-grained tokens, and the token is pending | An owner approves it: the organization's *Settings*, *Personal access tokens*, *Pending requests* |
 | The site answers 404 | Pages is not enabled yet, or still deploying | 3.5; the *Actions* tab of this repository |
 | The slides or the examples show an old version | The private repository's *Release* workflow has not run, or failed | Its *Actions* tab |
