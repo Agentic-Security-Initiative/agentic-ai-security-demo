@@ -21,6 +21,7 @@ domain of 3.6), one folder per section:
 | `/examples/` | Worked examples, read from the private repository | Live |
 | `/usecases/` | Use cases, read from the private repository, one card per case | Live |
 | `/controls/` | A catalog, read from the private repository, with groups of filters and a search | Live |
+| `/download/` | The download of the latest release, with what GitHub asks before it serves the file | Live |
 
 A section in preparation shows only a placeholder that says so. Section 5.2 sets out how a section is
 built. The overview also explains how to create a token, and every sign-in page links to it.
@@ -73,23 +74,30 @@ Each group of filters keeps one choice, and an entry shows when it carries the t
 and matches the search; each button counts the entries its choice would show. The choices are the
 address, joined by `+` (`#<filter>` or `#<filter>+<filter>`), and an entry is reached at `#<id>`, so
 that the cards of `/examples/` and `/usecases/` can link to a filtered view. With a thousand
-entries, a text is written into the page only when its details first open.
+entries, a text is written into the page only when its details first open. The sources the
+document cites appear as a line of links at the top and as a list at the foot (`#sources`); a link
+that leaves the site opens in a new tab and sends no referrer.
 
 ### 2.4 The overview
 
 Before a reader signs in, the overview explains how to create a token. Once a section has stored
 one, the overview asks the API for the latest release of the private repository (neither a draft
-nor a prerelease) and shows, in place of that help, a button that downloads its PDF. The button is
-a link to the asset's address on github.com, which serves the file, under the asset's name with
-its version, to the account signed in to github.com in the same browser: the host of release
-assets sends no CORS header, so a page cannot download the file through the API with the token.
-Without a token, or when GitHub answers with an error, the help stays.
+nor a prerelease) and shows, in place of that help, the release and a button to the page
+`/download/`. That page explains what github.com asks before it serves the file: a browser signed
+in to github.com with an account added to the repository as a collaborator, since GitHub answers
+404 Not Found to anyone else; it links to the sign-in and to the repository's invitations, and then
+offers the asset's address on github.com, which serves the file under the asset's name with its
+version. The host of release assets sends no CORS header, so a page cannot download the file
+through the API with the token. Without a token, or when GitHub answers with an error, the help
+stays.
 
 ### 2.5 Files
 
 | File | Content |
 |---|---|
-| `index.html`, `assets/overview.js` | The overview, and the code that offers the latest release once signed in |
+| `index.html`, `assets/overview.js` | The overview, and the code that shows the latest release once signed in |
+| `download/index.html`, `download/download.js` | The download page: what github.com asks, then the link to the file |
+| `assets/release.js` | The PDF of the latest release, read through the API with the token |
 | `slides/index.html`, `slides/viewer.js` | The sign-in page of the presentation, and the code that writes the deck into it |
 | `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that draws the chart of all the items and lays the document out with `assets/cards.js` |
 | `usecases/index.html`, `usecases/usecases.js` | The sign-in page of the use cases, and the code that lays the document out with `assets/cards.js` |
@@ -247,12 +255,22 @@ get the shortest expiration and be deleted after use.
 
 ### 5.1 Publishing a change
 
-Edit the files in `demo/`, then commit and push in `demo/` (with the token URL of 3.3 in a
-Codespace created before 3.2), then record the new commit in the private repository:
+Edit the files in `demo/`, then commit and push in `demo/`, then record the new commit in the
+private repository:
 
 ```bash
 cd demo && git add . && git commit -m "..." && git push && cd ..
 git add demo && git commit -m "Update the site"
+```
+
+In a Codespace created before 3.2, whose own token cannot push here, push with the token of 3.2 in
+`DEMO_TOKEN` instead, and fetch afterwards, since a push to a URL does not update `origin/master`:
+
+```bash
+cd demo
+git push "https://andreagalle:${DEMO_TOKEN}@github.com/andreagalle/agentic-ai-security-demo.git" master
+git fetch origin
+cd ..
 ```
 
 A new Codespace checks `demo/` out at the recorded commit, detached from any branch; run

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Requests go only to the GitHub API; the page loads nothing but its own files. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; connect-src https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Download</title>
+  <link rel="stylesheet" href="../assets/site.css">
+  <script type="module" src="download.js"></script>
+</head>
+<body>
+  <main class="card">
+    <p class="up"><a href="../">Overview</a></p>
+    <p class="kicker">Download</p>
+    <h1>Download the full paper in PDF</h1>
+    <p class="lead">
+      GitHub serves the file, not this site, and only to a browser signed in to github.com with an
+      account that can read the private repository: an account added to it as a collaborator. To
+      anyone else GitHub answers <em>404 Not Found</em>, which keeps the repository hidden.
+    </p>
+
+    <section class="help-section" aria-labelledby="steps-title">
+      <h2 id="steps-title">Before you continue</h2>
+      <ol>
+        <li>Sign in to github.com in this browser, with the account that was given access:
+          <a href="https://github.com/login" target="_blank" rel="noopener noreferrer">sign in to
+          GitHub</a>.</li>
+        <li>Make sure that account is a collaborator of the repository: the invitation GitHub sent
+          by e-mail must have been accepted, which you can also do on the
+          <a id="invitations" href="https://github.com/" target="_blank" rel="noopener noreferrer">page
+          of the invitation</a>.</li>
+        <li>Then continue: GitHub saves the file under its own name, which carries the version.</li>
+      </ol>
+    </section>
+
+    <p id="file" class="fine" hidden>The file: <code id="file-name"></code><span id="file-date"></span>.</p>
+    <p class="actions">
+      <a id="continue" class="button primary" href="../" hidden>Continue to the download on GitHub</a>
+    </p>
+    <p id="status" role="status" aria-live="polite"></p>
+
+    <p class="fine">
+      If GitHub still answers <em>404 Not Found</em>, this browser is signed in with another account,
+      or the invitation has not been accepted yet. The token pasted in this site does not count on
+      github.com: it reads the material through the API only.
+    </p>
+  </main>
+</body>
+</html>

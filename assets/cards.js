@@ -205,6 +205,10 @@ function list(block) {
     for (const item of links) {
       const link = element("a", "id-link", item.label);
       link.href = item.href;
+      if (/^https?:/.test(item.href)) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
       row.append(link);
     }
     box.append(row);

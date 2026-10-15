@@ -27,6 +27,45 @@ function summaryNode(summary) {
   return box;
 }
 
+// A link that leaves the site opens apart, and tells the other site nothing of this one.
+function link(label, href) {
+  const node = element("a", "", label);
+  node.href = href;
+  if (/^https?:/.test(href)) {
+    node.target = "_blank";
+    node.rel = "noopener noreferrer";
+  }
+  return node;
+}
+
+// The sources: one line of their first links near the top, and the whole list with its links.
+function sourcesLine(sources) {
+  const line = element("p", "sources-line");
+  line.append(element("span", "filter-label", sources.title));
+  sources.items.forEach((item, i) => {
+    if (i) line.append(" \u00b7 ");
+    line.append(link(item.title, item.links[0].href));
+  });
+  return line;
+}
+
+function sourcesNode(sources) {
+  const box = element("section", "catalog-sources");
+  box.id = "sources";
+  const list = element("ul");
+  for (const item of sources.items) {
+    const row = element("li");
+    row.append(element("strong", "", item.title), " ", item.text, " ");
+    item.links.forEach((each, i) => {
+      if (i) row.append(" \u00b7 ");
+      row.append(link(each.label, each.href));
+    });
+    list.append(row);
+  }
+  box.append(element("h2", "", sources.title), list);
+  return box;
+}
+
 function metaNode(item) {
   const pair = element("div");
   const value = element("dd");
@@ -82,6 +121,7 @@ function show(text) {
     document.querySelector(`[data-fill="${key}"]`).textContent = view[key];
   }
   const catalog = document.getElementById("catalog");
+  if (view.sources) catalog.append(sourcesLine(view.sources));
   if (view.summary) catalog.append(summaryNode(view.summary));
 
   const records = [];
@@ -124,6 +164,7 @@ function show(text) {
     legend.append(element("h2", "", view.legend.title), list);
     catalog.append(legend);
   }
+  if (view.sources) catalog.append(sourcesNode(view.sources));
 
   // One choice per group of filters, "all" by default; the search narrows every choice.
   const choice = new Map(view.filters.map((group) => [group.id, "all"]));
