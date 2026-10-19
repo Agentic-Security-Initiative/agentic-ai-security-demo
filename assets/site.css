@@ -792,6 +792,12 @@ abbr {
   stroke-width: 3px;
 }
 
+.chart .point .leader {
+  stroke: var(--text);
+  stroke-opacity: 0.6;
+  stroke-width: 1;
+}
+
 .chart a:hover circle,
 .chart a:focus-visible circle {
   fill: var(--accent);

@@ -1,8 +1,9 @@
 // Draws a chart document as SVG: two axes with their ticks, regions in the three tones, boundary
-// lines, and points, each point with a tooltip and, when it has one, a link; a legend names the
-// regions. The document gives every number and every label; this code only lays them out. The
-// chart is drawn at the width it is given, and drawn again when that width changes, so that its
-// text keeps its size on every screen.
+// lines, and points, each point with a tooltip and, when it has one, a link, and with its label
+// placed clear of the other labels and points; a legend names the regions. The document gives
+// every number and every label; this code only lays them out. The chart is drawn at the width it
+// is given, and drawn again when that width changes, so that its text keeps its size on every
+// screen.
 
 const SVG = "http://www.w3.org/2000/svg";
 
@@ -80,27 +81,63 @@ function draw(spec, canvas) {
   axes.append(yLabel);
   svg.append(axes);
 
-  // Labels sit beside their points, on the side with room, and move down when they would overlap.
-  const placed = [];
+  // The drawing goes in the page first, so that each label can be measured before it is placed.
+  canvas.replaceChildren(svg);
   const marks = node("g", { class: "points" });
-  const ordered = [...spec.points].sort((a, b) => sy(a.y) - sy(b.y));
-  for (const point of ordered) {
-    const px = sx(point.x);
-    const py = sy(point.y);
-    const right = px < MARGIN.left + plot.width * 0.72;
-    const labelWidth = point.label.length * CHAR_WIDTH;
-    const left = right ? px + 10 : px - 10 - labelWidth;
-    let ly = py + 4;
-    for (const other of placed) {
-      const apart = left + labelWidth < other.left || other.left + other.width < left;
-      if (!apart && Math.abs(ly - other.y) < LABEL_HEIGHT) ly = other.y + LABEL_HEIGHT;
-    }
-    placed.push({ left, width: labelWidth, y: ly });
+  svg.append(marks);
+  placeLabels(spec.points.map((point) => ({ point, px: sx(point.x), py: sy(point.y) })), marks, {
+    left: MARGIN.left, top: MARGIN.top, right: MARGIN.left + plot.width, bottom: MARGIN.top + plot.height,
+  });
+}
 
+const RADIUS = 6;
+const GAP = 4;
+
+function overlap(a, b) {
+  const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+  const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+  return w > 0 && h > 0 ? w * h : 0;
+}
+
+// The boxes a label may take around its point: beside it, then above and below it, then further
+// out and slid along, each nearer place tried first. A box away from the point is joined to it by a leader line.
+function candidates(px, py, width) {
+  const h = LABEL_HEIGHT;
+  const near = RADIUS + GAP;
+  const boxes = [
+    { left: px + near, top: py - h / 2 },
+    { left: px - near - width, top: py - h / 2 },
+    { left: px - width / 2, top: py - near - h },
+    { left: px - width / 2, top: py + near },
+    { left: px + near, top: py - near - h },
+    { left: px + near, top: py + near },
+    { left: px - near - width, top: py - near - h },
+    { left: px - near - width, top: py + near },
+  ];
+  for (let step = 1; step <= 6; step += 1) {
+    const dy = near + step * h;
+    for (const top of [py - dy - h, py + dy]) {
+      boxes.push({ left: px + near, top, leader: true });
+      boxes.push({ left: px - near - width, top, leader: true });
+      for (const share of [0.5, 0.25, 0.75, 0, 1]) boxes.push({ left: px - share * width, top, leader: true });
+    }
+  }
+  return boxes.map((box) => ({ ...box, right: box.left + width, bottom: box.top + h }));
+}
+
+// Places the labels one point at a time, from the most crowded point to the least, each in the
+// first box that overlaps no frame edge, no point, and no other label, or else in the box that
+// overlaps least.
+function placeLabels(items, marks, frame) {
+  const dots = items.map(({ px, py }) => ({
+    left: px - RADIUS - 2, right: px + RADIUS + 2, top: py - RADIUS - 2, bottom: py + RADIUS + 2,
+  }));
+  const groups = items.map(({ point, px, py }) => {
     const group = node("g", { class: "point" });
     group.append(node("title", {}, point.title || point.label));
-    group.append(node("circle", { cx: px, cy: py, r: 6 }));
-    group.append(node("text", { x: right ? px + 10 : px - 10, y: ly, "text-anchor": right ? "start" : "end" }, point.label));
+    const text = node("text", { x: px, y: py }, point.label);
+    group.append(text);
+    group.append(node("circle", { cx: px, cy: py, r: RADIUS }));
     if (point.href) {
       const link = node("a", { href: point.href });
       link.append(group);
@@ -108,10 +145,49 @@ function draw(spec, canvas) {
     } else {
       marks.append(group);
     }
-  }
-  svg.append(marks);
+    return { group, text, width: text.getComputedTextLength() || point.label.length * CHAR_WIDTH };
+  });
 
-  canvas.replaceChildren(svg);
+  const crowding = items.map((a) => items.reduce((sum, b) => sum + 1 / (1 + Math.hypot(a.px - b.px, a.py - b.py)), 0));
+  const order = items.map((_, i) => i).sort((a, b) => crowding[b] - crowding[a]);
+  const boxes = items.map(({ px, py }, i) => candidates(px, py, groups[i].width));
+  const placed = [];
+  const choose = (i) => {
+    let best;
+    let bestCost = Infinity;
+    for (const box of boxes[i]) {
+      let cost = ((box.right - box.left) * (box.bottom - box.top) - overlap(box, frame)) * 4;
+      for (let j = 0; j < placed.length; j += 1) if (j !== i && placed[j]) cost += overlap(box, placed[j]) * 4;
+      for (let j = 0; j < dots.length; j += 1) if (j !== i) cost += overlap(box, dots[j]) * 2;
+      if (cost < bestCost) {
+        best = box;
+        bestCost = cost;
+      }
+      if (cost === 0) break;
+    }
+    return best;
+  };
+  // A first pass places each label against those placed before it; the rounds after place each
+  // one again against all the others, so that a label placed early can make way for a later one.
+  for (const i of order) placed[i] = choose(i);
+  for (let round = 0; round < 3; round += 1) for (const i of order) placed[i] = choose(i);
+
+  for (const i of order) {
+    const { px, py } = items[i];
+    const { group, text } = groups[i];
+    const best = placed[i];
+    text.setAttribute("x", best.left);
+    text.setAttribute("y", best.bottom - 3);
+    if (best.leader) {
+      const ty = best.top > py ? best.top : best.bottom;
+      const tx = best.left > px ? best.left : best.right < px ? best.right : px;
+      const reach = Math.hypot(tx - px, ty - py);
+      group.prepend(node("line", {
+        class: "leader",
+        x1: px + ((tx - px) / reach) * RADIUS, y1: py + ((ty - py) / reach) * RADIUS, x2: tx, y2: ty,
+      }));
+    }
+  }
 }
 
 // A figure with a title, the drawing, a legend of the regions, and a note; rich() lays out a text

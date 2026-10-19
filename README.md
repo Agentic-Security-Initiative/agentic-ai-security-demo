@@ -104,7 +104,7 @@ stays.
 | `examples/index.html`, `examples/examples.js` | The sign-in page of the examples, and the code that draws the chart of all the items and lays the document out with `assets/cards.js` |
 | `usecases/index.html`, `usecases/usecases.js` | The sign-in page of the use cases, and the code that lays the document out with `assets/cards.js` |
 | `assets/cards.js` | The tiles in their groups, and the card of each item in a dialog routed by the address, laid out by kinds of block; shared by `/examples/` and `/usecases/` |
-| `assets/chart.js` | A chart drawn as SVG from a document: axes, regions in the three tones, boundary lines, and points with tooltips and links |
+| `assets/chart.js` | A chart drawn as SVG from a document: axes, regions in the three tones, boundary lines, and points with tooltips and links, each label placed clear of the other labels and points, with a leader line when it sits away from its point |
 | `controls/index.html`, `controls/controls.js` | The sign-in page of the controls, and the code that lays the catalog out with its filters |
 | `assets/site.css` | The style of every page, in the palette of the deck: a system typeface, thin rules, soft shadows, short transitions |
 | `assets/logo.png`, `assets/favicon.png` | The logo, in the bar and in the button of the presentation; and the icon of every page. Both are made in the private repository and copied here |
