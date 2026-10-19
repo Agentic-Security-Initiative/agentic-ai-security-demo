@@ -286,8 +286,8 @@ git fetch origin
 cd ..
 ```
 
-A new Codespace checks `demo/` out at the recorded commit, detached from any branch; run
-`git -C demo switch master` before committing there.
+A new Codespace checks `demo/` out on `master`, at its tip, since the submodule follows that
+branch rather than a recorded commit; run `git -C demo pull` to bring it up to date.
 
 ### 5.2 Building a section
 
